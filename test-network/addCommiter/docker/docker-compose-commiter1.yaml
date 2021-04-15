@@ -1,0 +1,54 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+version: '2'
+
+volumes:
+  commiter1.org1.example.com:
+
+networks:
+  test:
+
+services:
+
+  commiter1.org1.example.com:
+    container_name: commiter1.org1.example.com
+    image: mihongtech/mhchain-commiter:$IMAGE_TAG
+    environment:
+      #Generic commiter variables
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      # the following setting starts chaincode containers on the same
+      # bridge network as the commiters
+      # https://docs.docker.com/compose/networking/
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=${COMPOSE_PROJECT_NAME}_test
+      - CORE_CHAINCODE_BUILDER=${DOCKER_NS}/mhchain-ccenv:$IMAGE_TAG
+      - CORE_CHAINCODE_GOLANG_RUNTIME=${DOCKER_NS}/mhchain-baseos:$IMAGE_TAG
+      - FABRIC_LOGGING_SPEC=INFO
+      #- FABRIC_LOGGING_SPEC=DEBUG
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/mihongtech/mhchain/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/mihongtech/mhchain/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/mihongtech/mhchain/tls/ca.crt
+      # Commiter specific variabes
+      - CORE_PEER_ID=commiter1.org1.example.com
+      - CORE_PEER_ADDRESS=commiter1.org1.example.com:7051
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
+      - CORE_PEER_CHAINCODEADDRESS=commiter1.org1.example.com:7052
+      - CORE_PEER_CHAINCODELISTENADDRESS=0.0.0.0:7052
+      - CORE_PEER_GOSSIP_BOOTSTRAP=commiter1.org1.example.com:7051
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=commiter1.org1.example.com:7051
+      - CORE_PEER_LOCALMSPID=Org1MSP
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - ../../organizations/commiterOrganizations/org1.example.com/commiters/commiter1.org1.example.com/msp:/etc/mihongtech/mhchain/msp
+      - ../../organizations/commiterOrganizations/org1.example.com/commiters/commiter1.org1.example.com/tls:/etc/mihongtech/mhchain/tls
+      - commiter1.org1.example.com:/var/mihongtech/production
+    working_dir: /opt/gopath/src/github.com/mihongtech/mhchain/commiter
+    command: commiter node start
+    ports:
+      - 8051:7051
+    networks:
+      - test

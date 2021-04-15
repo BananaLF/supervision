@@ -1,0 +1,328 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+---
+################################################################################
+#
+#   Section: Organizations
+#
+#   - This section defines the different organizational identities which will
+#   be referenced later in the configuration.
+#
+################################################################################
+Organizations:
+
+    # SampleOrg defines an MSP using the sampleconfig.  It should never be used
+    # in production but may be used as a template for other definitions
+    - &ConsensusOrg
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the mhchain.git development environment
+        Name: ConsensusOrg
+
+        # ID to load the MSP definition as
+        ID: ConsensusMSP
+
+        # MSPDir is the filesystem path which contains the MSP configuration
+        MSPDir: ../organizations/consensusOrganizations/example.com/msp
+
+        # Policies defines the set of policies at this level of the config tree
+        # For organization policies, their canonical path is usually
+        #   /Channel/<Application|Consensus>/<OrgName>/<PolicyName>
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('ConsensusMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('ConsensusMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('ConsensusMSP.admin')"
+
+        OrdererEndpoints:
+            - consensus.example.com:7050
+            - consensus1.example.com:6050
+            - consensus2.example.com:5050
+
+    - &Org1
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the mhchain.git development environment
+        Name: Org1MSP
+
+        # ID to load the MSP definition as
+        ID: Org1MSP
+
+        MSPDir: ../organizations/commiterOrganizations/org1.example.com/msp
+
+        # Policies defines the set of policies at this level of the config tree
+        # For organization policies, their canonical path is usually
+        #   /Channel/<Application|Consensus>/<OrgName>/<PolicyName>
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('Org1MSP.admin', 'Org1MSP.peer', 'Org1MSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('Org1MSP.admin', 'Org1MSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('Org1MSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('Org1MSP.peer')"
+
+    - &Org2
+        # DefaultOrg defines the organization which is used in the sampleconfig
+        # of the mhchain.git development environment
+        Name: Org2MSP
+
+        # ID to load the MSP definition as
+        ID: Org2MSP
+
+        MSPDir: ../organizations/commiterOrganizations/org2.example.com/msp
+
+        # Policies defines the set of policies at this level of the config tree
+        # For organization policies, their canonical path is usually
+        #   /Channel/<Application|Consensus>/<OrgName>/<PolicyName>
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('Org2MSP.admin', 'Org2MSP.peer', 'Org2MSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('Org2MSP.admin', 'Org2MSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('Org2MSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('Org2MSP.peer')"
+
+################################################################################
+#
+#   SECTION: Capabilities
+#
+#   - This section defines the capabilities of mhchain network. This is a new
+#   concept as of v1.1.0 and should not be utilized in mixed networks with
+#   v1.0.x commiters and consensuss.  Capabilities define features which must be
+#   present in a mhchain binary for that binary to safely participate in the
+#   mhchain network.  For instance, if a new MSP type is added, newer binaries
+#   might recognize and validate the signatures from this type, while older
+#   binaries without this support would be unable to validate those
+#   transactions.  This could lead to different versions of the mhchain binaries
+#   having different world states.  Instead, defining a capability for a channel
+#   informs those binaries without this capability that they must cease
+#   processing transactions until they have been upgraded.  For v1.0.x if any
+#   capabilities are defined (including a map with all capabilities turned off)
+#   then the v1.0.x commiter will deliberately crash.
+#
+################################################################################
+Capabilities:
+    # Channel capabilities apply to both the consensuss and the commiters and must be
+    # supported by both.
+    # Set the value of the capability to true to require it.
+    Channel: &ChannelCapabilities
+        # V2_0 capability ensures that consensuss and commiters behave according
+        # to v2.0 channel capabilities. Consensuss and commiters from
+        # prior releases would behave in an incompatible way, and are therefore
+        # not able to participate in channels at v2.0 capability.
+        # Prior to enabling V2.0 channel capabilities, ensure that all
+        # consensuss and commiters on a channel are at v2.0.0 or later.
+        V2_0: true
+
+    # Consensus capabilities apply only to the consensuss, and may be safely
+    # used with prior release commiters.
+    # Set the value of the capability to true to require it.
+    Orderer: &ConsensusCapabilities
+        # V2_0 consensus capability ensures that consensuss behave according
+        # to v2.0 consensus capabilities. Consensuss from
+        # prior releases would behave in an incompatible way, and are therefore
+        # not able to participate in channels at v2.0 consensus capability.
+        # Prior to enabling V2.0 consensus capabilities, ensure that all
+        # consensuss on channel are at v2.0.0 or later.
+        V2_0: true
+
+    # Application capabilities apply only to the commiter network, and may be safely
+    # used with prior release consensuss.
+    # Set the value of the capability to true to require it.
+    Application: &ApplicationCapabilities
+        # V2_0 application capability ensures that commiters behave according
+        # to v2.0 application capabilities. Commiters from
+        # prior releases would behave in an incompatible way, and are therefore
+        # not able to participate in channels at v2.0 application capability.
+        # Prior to enabling V2.0 application capabilities, ensure that all
+        # commiters on channel are at v2.0.0 or later.
+        V2_0: true
+
+################################################################################
+#
+#   SECTION: Application
+#
+#   - This section defines the values to encode into a config transaction or
+#   genesis block for application related parameters
+#
+################################################################################
+Application: &ApplicationDefaults
+
+    # Organizations is the list of orgs which are defined as participants on
+    # the application side of the network
+    Organizations:
+
+    # Policies defines the set of policies at this level of the config tree
+    # For Application policies, their canonical path is
+    #   /Channel/Application/<PolicyName>
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+        Endorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+################################################################################
+#
+#   SECTION: Consensus
+#
+#   - This section defines the values to encode into a config transaction or
+#   genesis block for consensus related parameters
+#
+################################################################################
+Orderer: &ConsensusDefaults
+
+    # Orderer Type: The orderer implementation to start
+    OrdererType: etcdraft
+    
+    # Addresses used to be the list of consensus addresses that clients and commiters
+    # could connect to.  However, this does not allow clients to associate consensus
+    # addresses and consensus organizations which can be useful for things such
+    # as TLS validation.  The preferred way to specify consensus addresses is now
+    # to include the ConsensusEndpoints item in your org definition
+    Addresses:
+        - consensus.example.com:7050
+
+    EtcdRaft:
+        Consenters:
+        - Host: consensus.example.com
+          Port: 7050
+          ClientTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus.example.com/tls/server.crt
+          ServerTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus.example.com/tls/server.crt
+        - Host: consensus1.example.com
+          Port: 6050
+          ClientTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus1.example.com/tls/server.crt
+          ServerTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus1.example.com/tls/server.crt
+        - Host: consensus2.example.com
+          Port: 5050
+          ClientTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus2.example.com/tls/server.crt
+          ServerTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus2.example.com/tls/server.crt
+
+    # Batch Timeout: The amount of time to wait before creating a batch
+    BatchTimeout: 2s
+
+    # Batch Size: Controls the number of messages batched into a block
+    BatchSize:
+
+        # Max Message Count: The maximum number of messages to permit in a batch
+        MaxMessageCount: 10
+
+        # Absolute Max Bytes: The absolute maximum number of bytes allowed for
+        # the serialized messages in a batch.
+        AbsoluteMaxBytes: 99 MB
+
+        # Preferred Max Bytes: The preferred maximum number of bytes allowed for
+        # the serialized messages in a batch. A message larger than the preferred
+        # max bytes will result in a batch larger than preferred max bytes.
+        PreferredMaxBytes: 512 KB
+
+    # Organizations is the list of orgs which are defined as participants on
+    # the consensus side of the network
+    Organizations:
+
+    # Policies defines the set of policies at this level of the config tree
+    # For Consensus policies, their canonical path is
+    #   /Channel/Consensus/<PolicyName>
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        # BlockValidation specifies what signatures must be included in the block
+        # from the consensus for the commiter to validate it.
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+################################################################################
+#
+#   CHANNEL
+#
+#   This section defines the values to encode into a config transaction or
+#   genesis block for channel related parameters.
+#
+################################################################################
+Channel: &ChannelDefaults
+    # Policies defines the set of policies at this level of the config tree
+    # For Channel policies, their canonical path is
+    #   /Channel/<PolicyName>
+    Policies:
+        # Who may invoke the 'Deliver' API
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        # Who may invoke the 'Broadcast' API
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        # By default, who may modify elements at this config level
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    # Capabilities describes the channel level capabilities, see the
+    # dedicated Capabilities section elsewhere in this file for a full
+    # description
+    Capabilities:
+        <<: *ChannelCapabilities
+
+################################################################################
+#
+#   Profile
+#
+#   - Different configuration profiles may be encoded here to be specified
+#   as parameters to the configtxgen tool
+#
+################################################################################
+Profiles:
+
+    TwoOrgsApplicationGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *ConsensusDefaults
+            Organizations:
+                - *ConsensusOrg
+            Capabilities:
+                <<: *ConsensusCapabilities
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Org1
+                - *Org2
+            Capabilities:
+                <<: *ApplicationCapabilities

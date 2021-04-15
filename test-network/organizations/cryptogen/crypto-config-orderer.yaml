@@ -1,0 +1,28 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+# ---------------------------------------------------------------------------
+# "ConsensusOrgs" - Definition of organizations managing consensus nodes
+# ---------------------------------------------------------------------------
+ConsensusOrgs:
+  # ---------------------------------------------------------------------------
+  # Consensus
+  # ---------------------------------------------------------------------------
+  - Name: Consensus
+    Domain: example.com
+    EnableNodeOUs: true
+    # ---------------------------------------------------------------------------
+    # "Specs" - See CommiterOrgs for complete description
+    # ---------------------------------------------------------------------------
+    Specs:
+      - Hostname: consensus
+        SANS:
+          - localhost
+      - Hostname: consensus1
+        SANS:
+          - localhost
+      - Hostname: consensus2
+        SANS:
+          - localhost
