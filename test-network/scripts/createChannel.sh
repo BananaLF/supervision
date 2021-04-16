@@ -46,34 +46,6 @@ createChannel() {
 	cat log.txt
 	verifyResult $res "Channel creation failed"
 
-	# Poll in case the raft leader is not set yet
-	local rc=1
-	local COUNTER=1
-	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
-		sleep $DELAY
-		set -x
-		osnadmin channel join --channelID $CHANNEL_NAME --config-block ./channel-artifacts/${CHANNEL_NAME}.block -o localhost:6053 --ca-file "$CONSENSUS1_CA" --client-cert "$CONSENSUS1_ADMIN_TLS_SIGN_CERT" --client-key "$CONSENSUS1_ADMIN_TLS_PRIVATE_KEY" >&log.txt
-		res=$?
-		{ set +x; } 2>/dev/null
-		let rc=$res
-		COUNTER=$(expr $COUNTER + 1)
-	done
-	cat log.txt
-	verifyResult $res "Channel creation failed"
-
-	local rc=1
-	local COUNTER=1
-	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
-		sleep $DELAY
-		set -x
-		osnadmin channel join --channelID $CHANNEL_NAME --config-block ./channel-artifacts/${CHANNEL_NAME}.block -o localhost:5053 --ca-file "$CONSENSUS2_CA" --client-cert "$CONSENSUS2_ADMIN_TLS_SIGN_CERT" --client-key "$CONSENSUS2_ADMIN_TLS_PRIVATE_KEY" >&log.txt
-		res=$?
-		{ set +x; } 2>/dev/null
-		let rc=$res
-		COUNTER=$(expr $COUNTER + 1)
-	done
-	cat log.txt
-	verifyResult $res "Channel creation failed"
 }
 
 # joinChannel ORG

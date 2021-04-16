@@ -43,8 +43,6 @@ Organizations:
 
         OrdererEndpoints:
             - consensus.example.com:7050
-            - consensus1.example.com:6050
-            - consensus2.example.com:5050
 
     - &Org1
         # DefaultOrg defines the organization which is used in the sampleconfig
@@ -219,14 +217,6 @@ Orderer: &ConsensusDefaults
           Port: 7050
           ClientTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus.example.com/tls/server.crt
           ServerTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus.example.com/tls/server.crt
-        - Host: consensus1.example.com
-          Port: 6050
-          ClientTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus1.example.com/tls/server.crt
-          ServerTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus1.example.com/tls/server.crt
-        - Host: consensus2.example.com
-          Port: 5050
-          ClientTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus2.example.com/tls/server.crt
-          ServerTLSCert: ../organizations/consensusOrganizations/example.com/consensuss/consensus2.example.com/tls/server.crt
 
     # Batch Timeout: The amount of time to wait before creating a batch
     BatchTimeout: 2s

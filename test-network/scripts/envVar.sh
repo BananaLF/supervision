@@ -12,18 +12,12 @@
 
 export CORE_PEER_TLS_ENABLED=true
 export CONSENSUS_CA=${PWD}/organizations/consensusOrganizations/example.com/consensuss/consensus.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-export CONSENSUS1_CA=${PWD}/organizations/consensusOrganizations/example.com/consensuss/consensus1.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-export CONSENSUS2_CA=${PWD}/organizations/consensusOrganizations/example.com/consensuss/consensus2.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
 
 export PEER0_ORG1_CA=${PWD}/organizations/commiterOrganizations/org1.example.com/commiters/commiter0.org1.example.com/tls/ca.crt
 export PEER0_ORG2_CA=${PWD}/organizations/commiterOrganizations/org2.example.com/commiters/commiter0.org2.example.com/tls/ca.crt
 export PEER0_ORG3_CA=${PWD}/organizations/commiterOrganizations/org3.example.com/commiters/commiter0.org3.example.com/tls/ca.crt
 export CONSENSUS_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/consensusOrganizations/example.com/consensuss/consensus.example.com/tls/server.crt
 export CONSENSUS_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/consensusOrganizations/example.com/consensuss/consensus.example.com/tls/server.key
-export CONSENSUS1_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/consensusOrganizations/example.com/consensuss/consensus1.example.com/tls/server.crt
-export CONSENSUS1_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/consensusOrganizations/example.com/consensuss/consensus1.example.com/tls/server.key
-export CONSENSUS2_ADMIN_TLS_SIGN_CERT=${PWD}/organizations/consensusOrganizations/example.com/consensuss/consensus2.example.com/tls/server.crt
-export CONSENSUS2_ADMIN_TLS_PRIVATE_KEY=${PWD}/organizations/consensusOrganizations/example.com/consensuss/consensus2.example.com/tls/server.key
 
 # Set environment variables for the commiter org
 setGlobals() {

@@ -20,9 +20,3 @@ ConsensusOrgs:
       - Hostname: consensus
         SANS:
           - localhost
-      - Hostname: consensus1
-        SANS:
-          - localhost
-      - Hostname: consensus2
-        SANS:
-          - localhost

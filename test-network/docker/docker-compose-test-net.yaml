@@ -7,8 +7,6 @@ version: '2'
 
 volumes:
   consensus.example.com:
-  consensus1.example.com:
-  consensus2.example.com:
   commiter0.org1.example.com:
   commiter0.org2.example.com:
 
@@ -54,86 +52,6 @@ services:
     ports:
       - 7050:7050
       - 7053:7053
-    networks:
-      - test
-
-  consensus1.example.com:
-    container_name: consensus1.example.com
-    image: mihongtech/mhchain-consensus:$IMAGE_TAG
-    environment:
-      - FABRIC_LOGGING_SPEC=INFO
-      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_LISTENPORT=6050
-      - ORDERER_GENERAL_LOCALMSPID=ConsensusMSP
-      - ORDERER_GENERAL_LOCALMSPDIR=/var/mihongtech/consensus/msp
-      # enabled TLS
-      - ORDERER_GENERAL_TLS_ENABLED=true
-      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/mihongtech/consensus/tls/server.key
-      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/mihongtech/consensus/tls/server.crt
-      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/mihongtech/consensus/tls/ca.crt]
-      - ORDERER_KAFKA_TOPIC_REPLICATIONFACTOR=1
-      - ORDERER_KAFKA_VERBOSE=true
-      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/mihongtech/consensus/tls/server.crt
-      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/mihongtech/consensus/tls/server.key
-      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/mihongtech/consensus/tls/ca.crt]
-      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
-      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
-      - ORDERER_ADMIN_TLS_ENABLED=true
-      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/mihongtech/consensus/tls/server.crt
-      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/mihongtech/consensus/tls/server.key
-      - ORDERER_ADMIN_TLS_ROOTCAS=[/var/mihongtech/consensus/tls/ca.crt]
-      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/mihongtech/consensus/tls/ca.crt]
-      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:6053
-    working_dir: /opt/gopath/src/github.com/mihongtech/mhchain
-    command: consensus
-    volumes:
-      - ../system-genesis-block/genesis.block:/var/mihongtech/consensus/consensus.genesis.block
-      - ../organizations/consensusOrganizations/example.com/consensuss/consensus1.example.com/msp:/var/mihongtech/consensus/msp
-      - ../organizations/consensusOrganizations/example.com/consensuss/consensus1.example.com/tls/:/var/mihongtech/consensus/tls
-      - consensus1.example.com:/var/mihongtech/production/consensus
-    ports:
-      - 6050:6050
-      - 6053:6053
-    networks:
-      - test
-
-  consensus2.example.com:
-    container_name: consensus2.example.com
-    image: mihongtech/mhchain-consensus:$IMAGE_TAG
-    environment:
-      - FABRIC_LOGGING_SPEC=INFO
-      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_LISTENPORT=5050
-      - ORDERER_GENERAL_LOCALMSPID=ConsensusMSP
-      - ORDERER_GENERAL_LOCALMSPDIR=/var/mihongtech/consensus/msp
-      # enabled TLS
-      - ORDERER_GENERAL_TLS_ENABLED=true
-      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/mihongtech/consensus/tls/server.key
-      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/mihongtech/consensus/tls/server.crt
-      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/mihongtech/consensus/tls/ca.crt]
-      - ORDERER_KAFKA_TOPIC_REPLICATIONFACTOR=1
-      - ORDERER_KAFKA_VERBOSE=true
-      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/mihongtech/consensus/tls/server.crt
-      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/mihongtech/consensus/tls/server.key
-      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/mihongtech/consensus/tls/ca.crt]
-      - ORDERER_GENERAL_BOOTSTRAPMETHOD=none
-      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
-      - ORDERER_ADMIN_TLS_ENABLED=true
-      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/mihongtech/consensus/tls/server.crt
-      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/mihongtech/consensus/tls/server.key
-      - ORDERER_ADMIN_TLS_ROOTCAS=[/var/mihongtech/consensus/tls/ca.crt]
-      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/mihongtech/consensus/tls/ca.crt]
-      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:5053
-    working_dir: /opt/gopath/src/github.com/mihongtech/mhchain
-    command: consensus
-    volumes:
-      - ../system-genesis-block/genesis.block:/var/mihongtech/consensus/consensus.genesis.block
-      - ../organizations/consensusOrganizations/example.com/consensuss/consensus2.example.com/msp:/var/mihongtech/consensus/msp
-      - ../organizations/consensusOrganizations/example.com/consensuss/consensus2.example.com/tls/:/var/mihongtech/consensus/tls
-      - consensus2.example.com:/var/mihongtech/production/consensus
-    ports:
-      - 5050:5050
-      - 5053:5053
     networks:
       - test
 
