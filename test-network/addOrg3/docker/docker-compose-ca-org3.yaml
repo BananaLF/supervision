@@ -10,7 +10,7 @@ services:
   ca_org3:
     image: mihongtech/mh-ca:$IMAGE_TAG
     environment:
-      - FABRIC_CA_HOME=/etc/mihongtech/mh-ca-server
+      - CA_CFG_PATH=/etc/mihongtech/mh-ca-server/mh-ca-server-config.yaml
       - FABRIC_CA_SERVER_CA_NAME=ca-org3
       - FABRIC_CA_SERVER_TLS_ENABLED=true
       - FABRIC_CA_SERVER_PORT=11054
