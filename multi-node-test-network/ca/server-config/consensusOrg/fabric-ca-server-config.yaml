@@ -309,11 +309,11 @@ csr:
      algo: ecdsa
      size: 256
    names:
-      - C: US
-        ST: "North Carolina"
+      - C: CN
+        ST: "SiChuan"
         L:
-        O: Hyperledger
-        OU: Fabric
+        O: MiHongTech
+        OU: MHChain
    hosts:
      - 4bfa3364b05a
      - localhost

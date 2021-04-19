@@ -303,8 +303,8 @@ signing:
 csr:
    cn: ca.org1.example.com
    names:
-      - C: US
-        ST: "North Carolina"
+      - C: CN
+        ST: "SiChuan"
         L: "Durham"
         O: org1.example.com
         OU:
