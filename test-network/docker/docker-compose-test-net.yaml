@@ -74,7 +74,7 @@ services:
       - CORE_PEER_TLS_CERT_FILE=/etc/mihongtech/mhchain/tls/server.crt
       - CORE_PEER_TLS_KEY_FILE=/etc/mihongtech/mhchain/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/mihongtech/mhchain/tls/ca.crt
-      # Peer specific variabes
+      # Commiter specific variabes
       - CORE_PEER_ID=commiter0.org1.example.com
       - CORE_PEER_ADDRESS=commiter0.org1.example.com:7051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:7051
@@ -114,7 +114,7 @@ services:
       - CORE_PEER_TLS_CERT_FILE=/etc/mihongtech/mhchain/tls/server.crt
       - CORE_PEER_TLS_KEY_FILE=/etc/mihongtech/mhchain/tls/server.key
       - CORE_PEER_TLS_ROOTCERT_FILE=/etc/mihongtech/mhchain/tls/ca.crt
-      # Peer specific variabes
+      # Commiter specific variabes
       - CORE_PEER_ID=commiter0.org2.example.com
       - CORE_PEER_ADDRESS=commiter0.org2.example.com:9051
       - CORE_PEER_LISTENADDRESS=0.0.0.0:9051

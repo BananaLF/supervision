@@ -111,7 +111,7 @@ fi
 
 packageChaincode() {
   set -x
-  peer lifecycle chaincode package ${CC_NAME}.tar.gz --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} --label ${CC_NAME}_${CC_VERSION} >&log.txt
+  commiter lifecycle chaincode package ${CC_NAME}.tar.gz --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} --label ${CC_NAME}_${CC_VERSION} >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -124,7 +124,7 @@ installChaincode() {
   ORG=$1
   setGlobals $ORG
   set -x
-  peer lifecycle chaincode install ${CC_NAME}.tar.gz >&log.txt
+  commiter lifecycle chaincode install ${CC_NAME}.tar.gz >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -137,7 +137,7 @@ queryInstalled() {
   ORG=$1
   setGlobals $ORG
   set -x
-  peer lifecycle chaincode queryinstalled >&log.txt
+  commiter lifecycle chaincode queryinstalled >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -151,7 +151,7 @@ approveForMyOrg() {
   ORG=$1
   setGlobals $ORG
   set -x
-  peer lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA" --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --package-id ${PACKAGE_ID} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
+  commiter lifecycle chaincode approveformyorg -o localhost:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA" --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --package-id ${PACKAGE_ID} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -173,7 +173,7 @@ checkCommitReadiness() {
     sleep $DELAY
     infoln "Attempting to check the commit readiness of the chaincode definition on commiter0.org${ORG}, Retry after $DELAY seconds."
     set -x
-    peer lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} --output json >&log.txt
+    commiter lifecycle chaincode checkcommitreadiness --channelID $CHANNEL_NAME --name ${CC_NAME} --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} --output json >&log.txt
     res=$?
     { set +x; } 2>/dev/null
     let rc=0
@@ -196,11 +196,11 @@ commitChaincodeDefinition() {
   res=$?
   verifyResult $res "Invoke transaction failed on channel '$CHANNEL_NAME' due to uneven number of commiter and org parameters "
 
-  # while 'peer chaincode' command can get the consensus endpoint from the
+  # while 'commiter chaincode' command can get the consensus endpoint from the
   # commiter (if join was successful), let's supply it directly as we know
   # it using the "-o" option
   set -x
-  peer lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA" --channelID $CHANNEL_NAME --name ${CC_NAME} "${PEER_CONN_PARMS[@]}" --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
+  commiter lifecycle chaincode commit -o localhost:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA" --channelID $CHANNEL_NAME --name ${CC_NAME} "${PEER_CONN_PARMS[@]}" --version ${CC_VERSION} --sequence ${CC_SEQUENCE} ${INIT_REQUIRED} ${CC_END_POLICY} ${CC_COLL_CONFIG} >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -222,7 +222,7 @@ queryCommitted() {
     sleep $DELAY
     infoln "Attempting to Query committed status on commiter0.org${ORG}, Retry after $DELAY seconds."
     set -x
-    peer lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME} >&log.txt
+    commiter lifecycle chaincode querycommitted --channelID $CHANNEL_NAME --name ${CC_NAME} >&log.txt
     res=$?
     { set +x; } 2>/dev/null
     test $res -eq 0 && VALUE=$(cat log.txt | grep -o '^Version: '$CC_VERSION', Sequence: [0-9]*, Endorsement Plugin: escc, Validation Plugin: vscc')
@@ -242,13 +242,13 @@ chaincodeInvokeInit() {
   res=$?
   verifyResult $res "Invoke transaction failed on channel '$CHANNEL_NAME' due to uneven number of commiter and org parameters "
 
-  # while 'peer chaincode' command can get the consensus endpoint from the
+  # while 'commiter chaincode' command can get the consensus endpoint from the
   # commiter (if join was successful), let's supply it directly as we know
   # it using the "-o" option
   set -x
   fcn_call='{"function":"'${CC_INIT_FCN}'","Args":[]}'
   infoln "invoke fcn call:${fcn_call}"
-  peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA" -C $CHANNEL_NAME -n ${CC_NAME} "${PEER_CONN_PARMS[@]}" --isInit -c ${fcn_call} >&log.txt
+  commiter chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA" -C $CHANNEL_NAME -n ${CC_NAME} "${PEER_CONN_PARMS[@]}" --isInit -c ${fcn_call} >&log.txt
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
@@ -268,7 +268,7 @@ chaincodeQuery() {
     sleep $DELAY
     infoln "Attempting to Query commiter0.org${ORG}, Retry after $DELAY seconds."
     set -x
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}' >&log.txt
+    commiter chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}' >&log.txt
     res=$?
     { set +x; } 2>/dev/null
     let rc=$res

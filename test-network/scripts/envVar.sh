@@ -82,8 +82,8 @@ parseCommiterConnectionParameters() {
   PEERS=""
   while [ "$#" -gt 0 ]; do
     setGlobals $1
-    PEER="peer0.org$1"
-    ## Set peer addresses
+    PEER="commiter0.org$1"
+    ## Set commiter addresses
     if [ -z "$PEERS" ]
     then
 	PEERS="$PEER"

@@ -46,7 +46,7 @@ signConfigtxAsCommiterOrg 1 org3_update_in_envelope.pb
 infoln "Submitting transaction from a different commiter (commiter0.org2) which also signs it"
 setGlobals 2
 set -x
-peer channel update -f org3_update_in_envelope.pb -c ${CHANNEL_NAME} -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA"
+commiter channel update -f org3_update_in_envelope.pb -c ${CHANNEL_NAME} -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA"
 { set +x; } 2>/dev/null
 
 successln "Config transaction to add org3 to network submitted"

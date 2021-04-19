@@ -42,7 +42,7 @@ createAnchorCommiterUpdate() {
 }
 
 updateAnchorCommiter() {
-  peer channel update -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com -c $CHANNEL_NAME -f ${CORE_PEER_LOCALMSPID}anchors.tx --tls --cafile "$CONSENSUS_CA" >&log.txt
+  commiter channel update -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com -c $CHANNEL_NAME -f ${CORE_PEER_LOCALMSPID}anchors.tx --tls --cafile "$CONSENSUS_CA" >&log.txt
   res=$?
   cat log.txt
   verifyResult $res "Anchor commiter update failed"

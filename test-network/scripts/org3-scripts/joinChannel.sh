@@ -34,7 +34,7 @@ joinChannel() {
   while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
     sleep $DELAY
     set -x
-    peer channel join -b $BLOCKFILE >&log.txt
+    commiter channel join -b $BLOCKFILE >&log.txt
     res=$?
     { set +x; } 2>/dev/null
     let rc=$res
@@ -54,7 +54,7 @@ BLOCKFILE="${CHANNEL_NAME}.block"
 
 echo "Fetching channel config block from consensus..."
 set -x
-peer channel fetch 0 $BLOCKFILE -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com -c $CHANNEL_NAME --tls --cafile "$CONSENSUS_CA" >&log.txt
+commiter channel fetch 0 $BLOCKFILE -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com -c $CHANNEL_NAME --tls --cafile "$CONSENSUS_CA" >&log.txt
 res=$?
 { set +x; } 2>/dev/null
 cat log.txt

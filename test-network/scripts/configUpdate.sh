@@ -20,7 +20,7 @@ fetchChannelConfig() {
 
   infoln "Fetching the most recent configuration block for the channel"
   set -x
-  peer channel fetch config config_block.pb -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com -c $CHANNEL --tls --cafile "$CONSENSUS_CA"
+  commiter channel fetch config config_block.pb -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com -c $CHANNEL --tls --cafile "$CONSENSUS_CA"
   { set +x; } 2>/dev/null
 
   infoln "Decoding config block to JSON and isolating config to ${OUTPUT}"
@@ -56,6 +56,6 @@ signConfigtxAsCommiterOrg() {
   CONFIGTXFILE=$2
   setGlobals $ORG
   set -x
-  peer channel signconfigtx -f "${CONFIGTXFILE}"
+  commiter channel signconfigtx -f "${CONFIGTXFILE}"
   { set +x; } 2>/dev/null
 }

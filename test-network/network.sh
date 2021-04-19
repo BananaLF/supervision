@@ -50,7 +50,7 @@ NONWORKING_VERSIONS="^1\.0\. ^1\.1\. ^1\.2\. ^1\.3\. ^1\.4\."
 # of go or other items could be added.
 function checkPrereqs() {
   ## Check if your have cloned the commiter binaries and configuration files.
-  peer version > /dev/null 2>&1
+  commiter version > /dev/null 2>&1
 
   if [[ $? -ne 0 || ! -d "../config" ]]; then
     errorln "Commiter binary and configuration files not found.."
@@ -58,8 +58,8 @@ function checkPrereqs() {
   fi
   # use the mhchain tools container to see if the samples and binaries match your
   # docker images
-  LOCAL_VERSION=$(peer version | sed -ne 's/ Version: //p')
-  DOCKER_IMAGE_VERSION=$(docker run --rm mihongtech/mhchain-tools:$IMAGETAG peer version | sed -ne 's/ Version: //p' | head -1)
+  LOCAL_VERSION=$(commiter version | sed -ne 's/ Version: //p')
+  DOCKER_IMAGE_VERSION=$(docker run --rm mihongtech/mhchain-tools:$IMAGETAG commiter version | sed -ne 's/ Version: //p' | head -1)
 
   infoln "LOCAL_VERSION=$LOCAL_VERSION"
   infoln "DOCKER_IMAGE_VERSION=$DOCKER_IMAGE_VERSION"

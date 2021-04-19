@@ -123,7 +123,7 @@ fetchChannelConfig() {
 
   infoln "Fetching the most recent configuration block for the channel"
   set -x
-  peer channel fetch config chaindata/config_block.pb -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com -c $CHANNEL --tls --cafile "$CONSENSUS_CA"
+  commiter channel fetch config chaindata/config_block.pb -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com -c $CHANNEL --tls --cafile "$CONSENSUS_CA"
   { set +x; } 2>/dev/null
 
   infoln "Decoding config block to JSON and isolating config to ${OUTPUT}"
@@ -154,7 +154,7 @@ signConfigtxAsCommiterOrg() {
   CONFIGTXFILE=$2
   setGlobals $ORG
   set -x
-  peer channel signconfigtx -f "${CONFIGTXFILE}"
+  commiter channel signconfigtx -f "${CONFIGTXFILE}"
   { set +x; } 2>/dev/null
 }
 
@@ -185,7 +185,7 @@ signConfigtxAsCommiterOrg 4 chaindata/consensus_update_in_envelope.pb
 infoln "Submitting transaction from a different commiter (commiter0.org2) which also signs it"
 setGlobals 2
 set -x
-peer channel update -f chaindata/consensus_update_in_envelope.pb -c ${CHANNEL_NAME} -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA"
+commiter channel update -f chaindata/consensus_update_in_envelope.pb -c ${CHANNEL_NAME} -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA"
 { set +x; } 2>/dev/null
 
 successln "Config transaction to add org3 to network submitted"
