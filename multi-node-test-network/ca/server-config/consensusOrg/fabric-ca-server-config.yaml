@@ -1,5 +1,5 @@
 #############################################################################
-#   This is a configuration file for the fabric-ca-server command.
+#   This is a configuration file for the mh-ca-server command.
 #
 #   COMMAND LINE ARGUMENTS AND ENVIRONMENT VARIABLES
 #   ------------------------------------------------
@@ -105,16 +105,16 @@ crl:
   expiry: 24h
 
 #############################################################################
-#  The registry section controls how the fabric-ca-server does two things:
+#  The registry section controls how the mh-ca-server does two things:
 #  1) authenticates enrollment requests which contain a username and password
 #     (also known as an enrollment ID and secret).
 #  2) once authenticated, retrieves the identity's attribute names and values.
 #     These attributes are useful for making access control decisions in
 #     chaincode.
 #  There are two main configuration options:
-#  1) The fabric-ca-server is the registry.
+#  1) The mh-ca-server is the registry.
 #     This is true if "ldap.enabled" in the ldap section below is false.
-#  2) An LDAP server is the registry, in which case the fabric-ca-server
+#  2) An LDAP server is the registry, in which case the mh-ca-server
 #     calls the LDAP server to perform these tasks.
 #     This is true if "ldap.enabled" in the ldap section below is true,
 #     which means this "registry" section is ignored.
@@ -145,13 +145,13 @@ registry:
 #  The datasource value depends on the type.
 #  If the type is "sqlite3", the datasource value is a file name to use
 #  as the database store.  Since "sqlite3" is an embedded database, it
-#  may not be used if you want to run the fabric-ca-server in a cluster.
-#  To run the fabric-ca-server in a cluster, you must choose "postgres"
+#  may not be used if you want to run the mh-ca-server in a cluster.
+#  To run the mh-ca-server in a cluster, you must choose "postgres"
 #  or "mysql".
 #############################################################################
 db:
   type: sqlite3
-  datasource: fabric-ca-server.db
+  datasource: mh-ca-server.db
   tls:
       enabled: false
       certfiles:
@@ -161,7 +161,7 @@ db:
 
 #############################################################################
 #  LDAP section
-#  If LDAP is enabled, the fabric-ca-server calls LDAP to:
+#  If LDAP is enabled, the mh-ca-server calls LDAP to:
 #  1) authenticate enrollment ID and secret (i.e. username and password)
 #     for enrollment requests;
 #  2) To retrieve identity attributes
@@ -304,7 +304,7 @@ signing:
 #     CA certificates though it can still issue end entity certificates.
 ###########################################################################
 csr:
-   cn: fabric-ca-server
+   cn: mh-ca-server
    keyrequest:
      algo: ecdsa
      size: 256
@@ -378,10 +378,10 @@ bccsp:
 # the server config file except port, debug, and tls sections.
 #
 # Examples:
-# fabric-ca-server start -b admin:adminpw --cacount 2
+# mh-ca-server start -b admin:adminpw --cacount 2
 #
-# fabric-ca-server start -b admin:adminpw --cafiles ca/ca1/fabric-ca-server-config.yaml
-# --cafiles ca/ca2/fabric-ca-server-config.yaml
+# mh-ca-server start -b admin:adminpw --cafiles ca/ca1/mh-ca-server-config.yaml
+# --cafiles ca/ca2/mh-ca-server-config.yaml
 #
 #############################################################################
 

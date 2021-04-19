@@ -2,7 +2,7 @@
 
 # imports
 . ../scripts/utils.sh
-. ./fabric-ca/registerEnroll.sh
+. ./mh-ca/registerEnroll.sh
 
 CHANNEL_NAME="$1"
 IMAGETAG="latest"

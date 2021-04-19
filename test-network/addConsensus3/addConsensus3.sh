@@ -24,7 +24,7 @@ export PEER0_ORG2_CA=${PWD}/../organizations/commiterOrganizations/org2.example.
 export PEER0_ORG3_CA=${PWD}/../organizations/commiterOrganizations/org3.example.com/commiters/commiter0.org3.example.com/tls/ca.crt
 # import utils
 . ../scripts/utils.sh
-. ./fabric-ca/registerEnroll.sh
+. ./mh-ca/registerEnroll.sh
 
 if [ ! -d "chaindata" ]; then
 	mkdir chaindata

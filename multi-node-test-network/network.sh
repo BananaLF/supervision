@@ -79,21 +79,21 @@ function checkPrereqs() {
     fi
   done
 
-  ## Check for fabric-ca
+  ## Check for mh-ca
   if [ "$CRYPTO" == "Certificate Authorities" ]; then
 
-    fabric-ca-client version > /dev/null 2>&1
+    mh-ca-client version > /dev/null 2>&1
     if [[ $? -ne 0 ]]; then
-      errorln "fabric-ca-client binary not found.."
+      errorln "mh-ca-client binary not found.."
       exit 1
     fi
-    CA_LOCAL_VERSION=$(fabric-ca-client version | sed -ne 's/ Version: //p')
-    CA_DOCKER_IMAGE_VERSION=$(docker run --rm hyperledger/fabric-ca:$CA_IMAGETAG fabric-ca-client version | sed -ne 's/ Version: //p' | head -1)
+    CA_LOCAL_VERSION=$(mh-ca-client version | sed -ne 's/ Version: //p')
+    CA_DOCKER_IMAGE_VERSION=$(docker run --rm mihongtech/mh-ca:$CA_IMAGETAG mh-ca-client version | sed -ne 's/ Version: //p' | head -1)
     infoln "CA_LOCAL_VERSION=$CA_LOCAL_VERSION"
     infoln "CA_DOCKER_IMAGE_VERSION=$CA_DOCKER_IMAGE_VERSION"
 
     if [ "$CA_LOCAL_VERSION" != "$CA_DOCKER_IMAGE_VERSION" ]; then
-      warnln "Local fabric-ca binaries and docker images are out of sync. This may cause problems."
+      warnln "Local mh-ca binaries and docker images are out of sync. This may cause problems."
     fi
   fi
 }
@@ -117,7 +117,7 @@ function checkPrereqs() {
 # and keys that they generate to create a valid root of trust for each organization.
 # The script uses Docker Compose to bring up three CAs, one for each commiter organization
 # and the ordering organization. The configuration file for creating the Fabric CA
-# servers are in the "organizations/fabric-ca" directory. Within the same directory,
+# servers are in the "organizations/mh-ca" directory. Within the same directory,
 # the "registerEnroll.sh" script uses the Fabric CA client to create the identities,
 # certificates, and MSP folders that are needed to create the test network in the
 # "organizations/consensusOrganizations" directory.
@@ -217,10 +217,10 @@ function networkDown() {
     # remove consensus block and other channel configuration transactions and certs
     docker run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf system-genesis-block/*.block organizations/commiterOrganizations organizations/consensusOrganizations'
     ## remove fabric ca artifacts
-    docker run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/org1/msp organizations/fabric-ca/org1/tls-cert.pem organizations/fabric-ca/org1/ca-cert.pem organizations/fabric-ca/org1/IssuerPublicKey organizations/fabric-ca/org1/IssuerRevocationPublicKey organizations/fabric-ca/org1/fabric-ca-server.db'
-    docker run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/org2/msp organizations/fabric-ca/org2/tls-cert.pem organizations/fabric-ca/org2/ca-cert.pem organizations/fabric-ca/org2/IssuerPublicKey organizations/fabric-ca/org2/IssuerRevocationPublicKey organizations/fabric-ca/org2/fabric-ca-server.db'
-    docker run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/fabric-ca/consensusOrg/msp organizations/fabric-ca/consensusOrg/tls-cert.pem organizations/fabric-ca/consensusOrg/ca-cert.pem organizations/fabric-ca/consensusOrg/IssuerPublicKey organizations/fabric-ca/consensusOrg/IssuerRevocationPublicKey organizations/fabric-ca/consensusOrg/fabric-ca-server.db'
-    docker run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf addOrg3/fabric-ca/org3/msp addOrg3/fabric-ca/org3/tls-cert.pem addOrg3/fabric-ca/org3/ca-cert.pem addOrg3/fabric-ca/org3/IssuerPublicKey addOrg3/fabric-ca/org3/IssuerRevocationPublicKey addOrg3/fabric-ca/org3/fabric-ca-server.db'
+    docker run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/mh-ca/org1/msp organizations/mh-ca/org1/tls-cert.pem organizations/mh-ca/org1/ca-cert.pem organizations/mh-ca/org1/IssuerPublicKey organizations/mh-ca/org1/IssuerRevocationPublicKey organizations/mh-ca/org1/mh-ca-server.db'
+    docker run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/mh-ca/org2/msp organizations/mh-ca/org2/tls-cert.pem organizations/mh-ca/org2/ca-cert.pem organizations/mh-ca/org2/IssuerPublicKey organizations/mh-ca/org2/IssuerRevocationPublicKey organizations/mh-ca/org2/mh-ca-server.db'
+    docker run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf organizations/mh-ca/consensusOrg/msp organizations/mh-ca/consensusOrg/tls-cert.pem organizations/mh-ca/consensusOrg/ca-cert.pem organizations/mh-ca/consensusOrg/IssuerPublicKey organizations/mh-ca/consensusOrg/IssuerRevocationPublicKey organizations/mh-ca/consensusOrg/mh-ca-server.db'
+    docker run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf addOrg3/mh-ca/org3/msp addOrg3/mh-ca/org3/tls-cert.pem addOrg3/mh-ca/org3/ca-cert.pem addOrg3/mh-ca/org3/IssuerPublicKey addOrg3/mh-ca/org3/IssuerRevocationPublicKey addOrg3/mh-ca/org3/mh-ca-server.db'
     # remove channel and script artifacts
     docker run --rm -v "$(pwd):/data" busybox sh -c 'cd /data && rm -rf channel-artifacts log.txt *.tar.gz'
   fi

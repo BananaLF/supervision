@@ -76,9 +76,9 @@ function generateOrg3() {
 
   # Create crypto material using Fabric CA
   if [ "$CRYPTO" == "Certificate Authorities" ]; then
-    fabric-ca-client version > /dev/null 2>&1
+    mh-ca-client version > /dev/null 2>&1
     if [[ $? -ne 0 ]]; then
-      echo "ERROR! fabric-ca-client binary not found.."
+      echo "ERROR! mh-ca-client binary not found.."
       exit 1
     fi
 
@@ -86,7 +86,7 @@ function generateOrg3() {
 
     IMAGE_TAG=${CA_IMAGETAG} docker-compose -f $COMPOSE_FILE_CA_ORG3 up -d 2>&1
 
-    . fabric-ca/registerEnroll.sh
+    . mh-ca/registerEnroll.sh
 
     sleep 10
 

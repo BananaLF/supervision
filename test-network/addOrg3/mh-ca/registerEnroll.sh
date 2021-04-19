@@ -12,7 +12,7 @@ function createOrg3 {
 	export FABRIC_CA_CLIENT_HOME=${PWD}/../organizations/commiterOrganizations/org3.example.com/
 
   set -x
-  fabric-ca-client enroll -u https://admin:adminpw@localhost:11054 --caname ca-org3 --tls.certfiles "${PWD}/fabric-ca/org3/tls-cert.pem"
+  mh-ca-client enroll -u https://admin:adminpw@localhost:11054 --caname ca-org3 --tls.certfiles "${PWD}/mh-ca/org3/tls-cert.pem"
   { set +x; } 2>/dev/null
 
   echo 'NodeOUs:
@@ -32,29 +32,29 @@ function createOrg3 {
 
 	infoln "Registering commiter0"
   set -x
-	fabric-ca-client register --caname ca-org3 --id.name commiter0 --id.secret commiter0pw --id.type peer --tls.certfiles "${PWD}/fabric-ca/org3/tls-cert.pem"
+	mh-ca-client register --caname ca-org3 --id.name commiter0 --id.secret commiter0pw --id.type peer --tls.certfiles "${PWD}/mh-ca/org3/tls-cert.pem"
   { set +x; } 2>/dev/null
 
   infoln "Registering user"
   set -x
-  fabric-ca-client register --caname ca-org3 --id.name user1 --id.secret user1pw --id.type client --tls.certfiles "${PWD}/fabric-ca/org3/tls-cert.pem"
+  mh-ca-client register --caname ca-org3 --id.name user1 --id.secret user1pw --id.type client --tls.certfiles "${PWD}/mh-ca/org3/tls-cert.pem"
   { set +x; } 2>/dev/null
 
   infoln "Registering the org admin"
   set -x
-  fabric-ca-client register --caname ca-org3 --id.name org3admin --id.secret org3adminpw --id.type admin --tls.certfiles "${PWD}/fabric-ca/org3/tls-cert.pem"
+  mh-ca-client register --caname ca-org3 --id.name org3admin --id.secret org3adminpw --id.type admin --tls.certfiles "${PWD}/mh-ca/org3/tls-cert.pem"
   { set +x; } 2>/dev/null
 
   infoln "Generating the commiter0 msp"
   set -x
-	fabric-ca-client enroll -u https://commiter0:commiter0pw@localhost:11054 --caname ca-org3 -M "${PWD}/../organizations/commiterOrganizations/org3.example.com/commiters/commiter0.org3.example.com/msp" --csr.hosts commiter0.org3.example.com --tls.certfiles "${PWD}/fabric-ca/org3/tls-cert.pem"
+	mh-ca-client enroll -u https://commiter0:commiter0pw@localhost:11054 --caname ca-org3 -M "${PWD}/../organizations/commiterOrganizations/org3.example.com/commiters/commiter0.org3.example.com/msp" --csr.hosts commiter0.org3.example.com --tls.certfiles "${PWD}/mh-ca/org3/tls-cert.pem"
   { set +x; } 2>/dev/null
 
   cp "${PWD}/../organizations/commiterOrganizations/org3.example.com/msp/config.yaml" "${PWD}/../organizations/commiterOrganizations/org3.example.com/commiters/commiter0.org3.example.com/msp/config.yaml"
 
   infoln "Generating the commiter0-tls certificates"
   set -x
-  fabric-ca-client enroll -u https://commiter0:commiter0pw@localhost:11054 --caname ca-org3 -M "${PWD}/../organizations/commiterOrganizations/org3.example.com/commiters/commiter0.org3.example.com/tls" --enrollment.profile tls --csr.hosts commiter0.org3.example.com --csr.hosts localhost --tls.certfiles "${PWD}/fabric-ca/org3/tls-cert.pem"
+  mh-ca-client enroll -u https://commiter0:commiter0pw@localhost:11054 --caname ca-org3 -M "${PWD}/../organizations/commiterOrganizations/org3.example.com/commiters/commiter0.org3.example.com/tls" --enrollment.profile tls --csr.hosts commiter0.org3.example.com --csr.hosts localhost --tls.certfiles "${PWD}/mh-ca/org3/tls-cert.pem"
   { set +x; } 2>/dev/null
 
 
@@ -73,14 +73,14 @@ function createOrg3 {
 
   infoln "Generating the user msp"
   set -x
-	fabric-ca-client enroll -u https://user1:user1pw@localhost:11054 --caname ca-org3 -M "${PWD}/../organizations/commiterOrganizations/org3.example.com/users/User1@org3.example.com/msp" --tls.certfiles "${PWD}/fabric-ca/org3/tls-cert.pem"
+	mh-ca-client enroll -u https://user1:user1pw@localhost:11054 --caname ca-org3 -M "${PWD}/../organizations/commiterOrganizations/org3.example.com/users/User1@org3.example.com/msp" --tls.certfiles "${PWD}/mh-ca/org3/tls-cert.pem"
   { set +x; } 2>/dev/null
 
   cp "${PWD}/../organizations/commiterOrganizations/org3.example.com/msp/config.yaml" "${PWD}/../organizations/commiterOrganizations/org3.example.com/users/User1@org3.example.com/msp/config.yaml"
 
   infoln "Generating the org admin msp"
   set -x
-	fabric-ca-client enroll -u https://org3admin:org3adminpw@localhost:11054 --caname ca-org3 -M "${PWD}/../organizations/commiterOrganizations/org3.example.com/users/Admin@org3.example.com/msp" --tls.certfiles "${PWD}/fabric-ca/org3/tls-cert.pem"
+	mh-ca-client enroll -u https://org3admin:org3adminpw@localhost:11054 --caname ca-org3 -M "${PWD}/../organizations/commiterOrganizations/org3.example.com/users/Admin@org3.example.com/msp" --tls.certfiles "${PWD}/mh-ca/org3/tls-cert.pem"
   { set +x; } 2>/dev/null
 
   cp "${PWD}/../organizations/commiterOrganizations/org3.example.com/msp/config.yaml" "${PWD}/../organizations/commiterOrganizations/org3.example.com/users/Admin@org3.example.com/msp/config.yaml"

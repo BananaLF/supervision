@@ -20,7 +20,7 @@ function createOrgs() {
 
   while :
     do
-      if [ ! -f "organizations/fabric-ca/org1/tls-cert.pem" ]; then
+      if [ ! -f "organizations/mh-ca/org1/tls-cert.pem" ]; then
         sleep 1
       else
         break
