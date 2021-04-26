@@ -1,0 +1,33 @@
+#!/bin/bash
+
+sudo mkdir build
+cd build
+
+echo "@Installing Docker Engine"
+sudo yum install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo yum install -y docker-ce docker-ce-cli containerd.io
+sudo systemctl start docker
+sudo groupadd docker
+sudo gpasswd -a $USER docker
+newgrp docker
+
+echo "@Installing Docker Compose"
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+
+echo "@Installing Google Golang"
+wget https://studygolang.com/dl/golang/go1.16.3.linux-amd64.tar.gz
+sudo mkdir -p /go/src
+sudo tar -C /usr/local -xzf go1.16.3.linux-amd64.tar.gz
+sudo echo 'export GOROOT=/usr/local/go'>>/etc/profile
+sudo echo 'export PATH=$PATH:$GOROOT/bin'>>/etc/profile
+sudo echo 'export GOPATH=/go'>>/etc/profile
+sudo echo 'export GO111MODULE=auto'>>/etc/profile
+sudo echo 'export GOPROXY=https://goproxy.io/'>>/etc/profile
+source /etc/profile
+
+echo "@Installing MiHongTech MHchain images"
+pushd softs
+. import-images.sh
+popd

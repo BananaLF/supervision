@@ -6,15 +6,15 @@
 version: '2'
 
 volumes:
-  lifei2.example.com:
+  CONSENSUS_DOMAIN_NAME:
 
 networks:
   test:
 
 services:
 
-  lifei2.example.com:
-    container_name: lifei2.example.com
+  CONSENSUS_DOMAIN_NAME:
+    container_name: CONSENSUS_DOMAIN_NAME
     image: mihongtech/mhchain-consensus:$IMAGE_TAG
     environment:
       - FABRIC_LOGGING_SPEC=INFO
@@ -46,7 +46,7 @@ services:
       - ../../system-genesis-block/genesis.block:/var/mihongtech/consensus/consensus.genesis.block
       - ../../organizations/consensusOrganizations/example.com/consensuss/${LOCAL_CONSENSUS_NAME}.example.com/msp:/var/mihongtech/consensus/msp
       - ../../organizations/consensusOrganizations/example.com/consensuss/${LOCAL_CONSENSUS_NAME}.example.com/tls/:/var/mihongtech/consensus/tls
-      - lifei2.example.com:/var/mihongtech/production/consensus
+      - CONSENSUS_DOMAIN_NAME:/var/mihongtech/production/consensus
     ports:
       - ${LOCAL_CONSENSUS_PORT}:4050
       - ${LOCAL_CONSENSUS_ADMIN_PORT}:4053

@@ -2,10 +2,16 @@
 
 COMPOSE_FILE=docker/docker-compose-consensus3.yaml
 IMAGETAG="latest"
-CHANNEL_NAME="$1"
-DELAY="$2"
-MAX_RETRY="$3"
-VERBOSE="$4"
+LOCAL_CONSENSUS_NAME="$1"
+LOCAL_CONSENSUS_PORT="$2"
+LOCAL_CONSENSUS_ADMIN_PORT="$3"
+CHANNEL_NAME="$4"
+DELAY="$5"
+MAX_RETRY="$6"
+VERBOSE="$7"
+: ${LOCAL_CONSENSUS_NAME:="consensus1"}
+: ${LOCAL_CONSENSUS_PORT:="4050"}
+: ${LOCAL_CONSENSUS_ADMIN_PORT:="4053"}
 : ${CHANNEL_NAME:="mychannel"}
 : ${DELAY:="3"}
 : ${MAX_RETRY:="5"}
@@ -16,9 +22,9 @@ export PATH=${PWD}/../../bin:${PWD}:$PATH
 export FABRIC_CFG_PATH=${PWD}/../../config/
 export CORE_PEER_TLS_ENABLED=true
 export CONSENSUS_CA=${PWD}/../organizations/consensusOrganizations/example.com/consensuss/consensus.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-export CONSENSUS3_CA=${PWD}/../organizations/consensusOrganizations/example.com/consensuss/consensus3.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
-export CONSENSUS3_ADMIN_TLS_SIGN_CERT=${PWD}/../organizations/consensusOrganizations/example.com/consensuss/consensus3.example.com/tls/server.crt
-export CONSENSUS3_ADMIN_TLS_PRIVATE_KEY=${PWD}/../organizations/consensusOrganizations/example.com/consensuss/consensus3.example.com/tls/server.key
+export CONSENSUS3_CA=${PWD}/../organizations/consensusOrganizations/example.com/consensuss/${LOCAL_CONSENSUS_NAME}.example.com/msp/tlscacerts/tlsca.example.com-cert.pem
+export CONSENSUS3_ADMIN_TLS_SIGN_CERT=${PWD}/../organizations/consensusOrganizations/example.com/consensuss/${LOCAL_CONSENSUS_NAME}.example.com/tls/server.crt
+export CONSENSUS3_ADMIN_TLS_PRIVATE_KEY=${PWD}/../organizations/consensusOrganizations/example.com/consensuss/${LOCAL_CONSENSUS_NAME}.example.com/tls/server.key
 export PEER0_ORG1_CA=${PWD}/../organizations/commiterOrganizations/org1.example.com/commiters/commiter0.org1.example.com/tls/ca.crt
 export PEER0_ORG2_CA=${PWD}/../organizations/commiterOrganizations/org2.example.com/commiters/commiter0.org2.example.com/tls/ca.crt
 export PEER0_ORG3_CA=${PWD}/../organizations/commiterOrganizations/org3.example.com/commiters/commiter0.org3.example.com/tls/ca.crt
@@ -26,19 +32,10 @@ export PEER0_ORG3_CA=${PWD}/../organizations/commiterOrganizations/org3.example.
 . ../scripts/utils.sh
 . ./mh-ca/registerEnroll.sh
 
-if [ ! -d "chaindata" ]; then
-	mkdir chaindata
-else
-  rm -r chaindata/*
-fi
-
-if [ ! -d "log.txt" ]; then
-	rm log.txt
-fi
 
 networkUp(){
   infoln "create consensus..."
-  createConsensus3
+  createConsensus3 $LOCAL_CONSENSUS_NAME
 
   COMPOSE_FILE_CONSENSUS3="-f ${COMPOSE_FILE}"
   IMAGE_TAG=$IMAGETAG docker-compose ${COMPOSE_FILE_CONSENSUS3} up -d 2>&1
@@ -56,7 +53,7 @@ joinChannel() {
 	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
 		sleep $DELAY
 		set -x
-		osnadmin channel join --channelID $CHANNEL_NAME --config-block ../channel-artifacts/${CHANNEL_NAME}.block -o localhost:4053 --ca-file "$CONSENSUS3_CA" --client-cert "$CONSENSUS3_ADMIN_TLS_SIGN_CERT" --client-key "$CONSENSUS3_ADMIN_TLS_PRIVATE_KEY" >log.txt
+		osnadmin channel join --channelID $CHANNEL_NAME --config-block ../channel-artifacts/${CHANNEL_NAME}.block -o localhost:${LOCAL_CONSENSUS_ADMIN_PORT} --ca-file "$CONSENSUS3_CA" --client-cert "$CONSENSUS3_ADMIN_TLS_SIGN_CERT" --client-key "$CONSENSUS3_ADMIN_TLS_PRIVATE_KEY" >log.txt
 		res=$?
 		{ set +x; } 2>/dev/null
 		let rc=$res
@@ -159,14 +156,26 @@ signConfigtxAsCommiterOrg() {
 }
 
 createModifyChannelConfig() {
-  mkdir chaindata
+  if [ ! -d "chaindata" ];then
+	  mkdir chaindata
+  else
+    rm -rf chaindata/*
+  fi
+
   fetchChannelConfig 1 ${CHANNEL_NAME} chaindata/config.json
-  cat chaindata/config.json | jq  -c '.channel_group.groups.Orderer.groups.ConsensusOrg.values.Endpoints.value.addresses | .[3]="consensus3.example.com:4050"' > chaindata/temp1.json
-  jq -s '.[0] * {"channel_group":{"groups":{"Orderer":{"groups": {"ConsensusOrg":{"values":{"Endpoints":{"value":{"addresses":.[1]}}}}}}}}}' chaindata/config.json chaindata/temp1.json > chaindata/temp_config_1.json
-  TEMP_TLS_CERT=$(cat ../organizations/consensusOrganizations/example.com/consensuss/consensus3.example.com/tls/server.crt | base64 | sed -e ':a;N;s/\n//;ta')
-  cat chaindata/temp_config_1.json | jq -c '.channel_group.groups.Orderer.values.OrdererType.value.metadata.consenters | .[3]={"client_tls_cert":"TEMP_TLS_CERT","host":"consensus3.example.com","port":4050,"server_tls_cert":"TEMP_TLS_CERT"}'|sed  "s/TEMP_TLS_CERT/${TEMP_TLS_CERT}/g" > chaindata/temp2.json
-  jq -s '.[0] * {"channel_group":{"groups":{"Orderer":{"values":{"OrdererType":{"value":{"metadata":{"consenters":.[1]}}}}}}}}' chaindata/temp_confg_1.json chaindata/temp2.json > chaindata/modified_config.json
+  CONSENSUS_SET_HOST=$(echo $LOCAL_CONSENSUS_NAME".example.com")
+  TEMP_TLS_CERT=$(cat ../organizations/consensusOrganizations/example.com/consensuss/${LOCAL_CONSENSUS_NAME}.example.com/tls/server.crt | base64 | sed -e ':a;N;s/\n//;ta')
+  CONSENSUS_LENGHT=$(cat chaindata/config.json | jq  -c '.channel_group.groups.Orderer.groups.ConsensusOrg.values.Endpoints.value.addresses |length')
+  cat chaindata/config.json | jq  -c ".channel_group.groups.Orderer.groups.ConsensusOrg.values.Endpoints.value.addresses | .[${CONSENSUS_LENGHT}]=\"${CONSENSUS_SET_HOST}:${LOCAL_CONSENSUS_PORT}\"" > chaindata/temp1.json
+  cat chaindata/config.json | jq  -c ".channel_group.groups.Orderer.values.ConsensusType.value.metadata.consenters | .[${CONSENSUS_LENGHT}]={\"client_tls_cert\":\"${TEMP_TLS_CERT}\",\"host\":\"${CONSENSUS_SET_HOST}\",\"port\":${LOCAL_CONSENSUS_PORT},\"server_tls_cert\":\"${TEMP_TLS_CERT}\"}" > chaindata/temp2.json
+  jq -s '.[0] * {"channel_group":{"groups":{"Orderer":{"groups": {"ConsensusOrg":{"values":{"Endpoints":{"value":{"addresses":.[1]}}}}}}}}}' chaindata/config.json chaindata/temp1.json > chaindata/temp_config.json
+  jq -s '.[0] * {"channel_group":{"groups":{"Orderer":{"values":{"ConsensusType":{"value":{"metadata":{"consenters":.[1]}}}}}}}}' chaindata/temp_config.json chaindata/temp2.json > chaindata/modified_config.json
 }
+
+infoln "Creating file .env ..."
+CONSENSUS_SET_HOST=$(echo $LOCAL_CONSENSUS_NAME".example.com")
+cat docker/.env_template | sed "s/consensus/${LOCAL_CONSENSUS_NAME}/g" | sed "s/c_port/${LOCAL_CONSENSUS_PORT}/g" | sed "s/osn_port/${LOCAL_CONSENSUS_ADMIN_PORT}/g" > docker/.env
+cat docker/docker-compose-consensus3-template.yaml | sed "s/CONSENSUS_DOMAIN_NAME/${CONSENSUS_SET_HOST}/g" > docker/docker-compose-consensus3.yaml
 infoln "Creating order3 ..."
 networkUp
 
