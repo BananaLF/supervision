@@ -5,9 +5,8 @@ SPDX-License-Identifier: Apache-2.0
 package main
 
 import (
-	"fmt"
 	"encoding/json"
-
+	"fmt"
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
@@ -54,7 +53,9 @@ func (s *SmartContract) AddEvaluation(ctx contractapi.TransactionContextInterfac
 	if err != nil {
 		return fmt.Errorf("Failed to add evaluation from world state. Because json marshal failed. ERROR:%s", err.Error())
 	}
-	return stub.PutState(key, bytes)
+	stub.PutState(key, bytes)
+	stub.SetEvent("AddEvaluation", bytes)
+	return nil
 }
 
 // RemoveEvaluation remove a evaluation at the world state with given key
@@ -63,8 +64,9 @@ func (s *SmartContract) RemoveEvaluation(ctx contractapi.TransactionContextInter
 	if _, err := s.queryData(stub, key); err != nil {
 		return fmt.Errorf("Failed to remove evaluation in world state. Because key:%s is not exist. ERROR:%s", key, err.Error())
 	}
-
-	return stub.DelState(key)
+	stub.DelState(key)
+	stub.SetEvent("RemoveEvaluation", []byte(key))
+	return nil
 }
 
 // RemoveEvaluation remove a evaluation at the world state with given key
@@ -83,7 +85,9 @@ func (s *SmartContract) ModifyEvaluation(ctx contractapi.TransactionContextInter
 	if err != nil {
 		return fmt.Errorf("Failed to modify evaluation from world state. Because json marshal failed. ERROR:%s", err.Error())
 	}
-	return stub.PutState(key, bytes)
+	stub.PutState(key, bytes)
+	stub.SetEvent("ModifyEvaluation", bytes)
+	return nil
 }
 
 // QueryCar returns the car stored in the world state with given id
@@ -133,6 +137,8 @@ func (s *SmartContract) RemoveEvaluations(ctx contractapi.TransactionContextInte
 			return fmt.Errorf("Remove Evalution failed. Key : %s. Error:%s", keys[i], err.Error())
 		}
 	}
+	eventBytes, _ := json.Marshal(keys)
+	stub.SetEvent("RemoveEvaluations", eventBytes)
 	return nil
 }
 

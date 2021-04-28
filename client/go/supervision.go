@@ -9,12 +9,12 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/fab"
 	"github.com/hyperledger/fabric-sdk-go/pkg/core/config"
 	"github.com/hyperledger/fabric-sdk-go/pkg/gateway"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"time"
 )
 
 func main() {
@@ -61,6 +61,35 @@ func main() {
 
 	contract := network.GetContract("supervision")
 
+	eventID := ".*"
+	end := make(chan bool)
+	reg, notifier, err := contract.RegisterEvent(eventID)
+	if err != nil {
+		fmt.Printf("Failed to register contract event: %s", err)
+		return
+	}
+	defer contract.Unregister(reg)
+
+	go func(notifier <-chan *fab.CCEvent) {
+		for i := 0; i >= 0; i++ {
+			var ccEvent *fab.CCEvent
+			select {
+			case ccEvent = <-notifier:
+				fmt.Printf("       Event:	%s\n", ccEvent.EventName)
+				fmt.Printf("Chaincode ID:   %s\n", ccEvent.ChaincodeID)
+				fmt.Printf("Block Number:	%d\n", ccEvent.BlockNumber)
+				fmt.Printf(" Transaction:	%s\n", ccEvent.TxID)
+				fmt.Printf("  Source URL:	%s\n", ccEvent.SourceURL)
+				fmt.Printf("     Payload:	%s\n", string(ccEvent.Payload))
+				fmt.Printf("\n\n")
+				if ccEvent.EventName == "RemoveEvaluation" {
+					end <- true
+					break
+				}
+			}
+		}
+	}(notifier)
+
 	var resourcesTest = []struct {
 		Key  string `json:"key"`
 		Data string `json:"data"`
@@ -79,7 +108,7 @@ func main() {
 		fmt.Printf("Failed to submit transaction: %s\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
+	//fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
 
 	_, err = contract.SubmitTransaction("AddEvaluation", "2", "lifei.example.com.0")
 	if err != nil {
@@ -92,10 +121,10 @@ func main() {
 			fmt.Printf("Failed to submit transaction: %s\n", err)
 			os.Exit(1)
 		}
-		fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
+		//fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
 	}
 
-	fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
+	//fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
 	_, err = contract.SubmitTransaction("RemoveEvaluation", "2")
 	if err != nil {
 		fmt.Printf("Failed to submit transaction: %s\n", err)
@@ -121,6 +150,7 @@ func main() {
 	}
 	fmt.Println(string(result))
 
+	<-end
 }
 
 func populateWallet(wallet *gateway.Wallet) error {
