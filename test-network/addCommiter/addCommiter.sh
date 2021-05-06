@@ -6,14 +6,19 @@
 
 CHANNEL_NAME="$1"
 IMAGETAG="latest"
-DELAY="$2"
-MAX_RETRY="$3"
-VERBOSE="$4"
+LOCAL_COMMITER_NAME="$2"
+LOCAL_COMMITER_PORT="$3"
+DELAY="$4"
+MAX_RETRY="$5"
+VERBOSE="$6"
 : ${CHANNEL_NAME:="mychannel"}
+: ${LOCAL_COMMITER_NAME:="commiter1"}
+: ${LOCAL_COMMITER_PORT:="7051"}
 : ${DELAY:="3"}
 : ${MAX_RETRY:="5"}
 : ${VERBOSE:="true"}
 
+COMMITER_SET_HOST=$(echo $LOCAL_COMMITER_NAME".org1.example.com")
 
 export PATH=${PWD}/../../bin:${PWD}:$PATH
 export FABRIC_CFG_PATH=${PWD}/../../config
@@ -22,7 +27,7 @@ export PEER0_ORG1_CA=${PWD}/../organizations/commiterOrganizations/org1.example.
 export CORE_PEER_LOCALMSPID="Org1MSP"
 export CORE_PEER_TLS_ROOTCERT_FILE=$PEER0_ORG1_CA
 export CORE_PEER_MSPCONFIGPATH=${PWD}/../organizations/commiterOrganizations/org1.example.com/users/Admin@org1.example.com/msp
-export CORE_PEER_ADDRESS=localhost:8051
+export CORE_PEER_ADDRESS=${COMMITER_SET_HOST}:$LOCAL_COMMITER_PORT
 export CORE_PEER_TLS_ENABLED=true
 
 
@@ -31,7 +36,7 @@ COMPOSE_FILE=docker/docker-compose-commiter1.yaml
 
 networkUp(){
   infoln "create consensus..."
-  createCommiter
+  createCommiter $LOCAL_COMMITER_NAME
 
   COMPOSE_FILE_CONSENSUS3="-f ${COMPOSE_FILE}"
   IMAGE_TAG=$IMAGETAG docker-compose ${COMPOSE_FILE_CONSENSUS3} up -d 2>&1
@@ -56,7 +61,7 @@ joinChannel() {
 		COUNTER=$(expr $COUNTER + 1)
 	done
 	cat log.txt
-	verifyResult $res "After $MAX_RETRY attempts, commiter0.org${ORG} has failed to join channel '$CHANNEL_NAME' "
+	verifyResult $res "After $MAX_RETRY attempts, ${COMMITER_SET_HOST} has failed to join channel '$CHANNEL_NAME' "
 }
 
 verifyResult() {
@@ -65,6 +70,11 @@ verifyResult() {
   fi
 }
 
+infoln "Creating file .env ..."
+cat docker/.env_template | sed "s/commiter/${LOCAL_COMMITER_NAME}/g" | sed "s/c_port/${LOCAL_COMMITER_PORT}/g" > docker/.env
+cat docker/docker-compose-commiter1-template.yaml | sed "s/COMMITER_DOMAIN_NAME/${COMMITER_SET_HOST}/g" > docker/docker-compose-commiter1.yaml
+
+infoln "Creating ${COMMITER_SET_HOST} ..."
 networkUp
 
 ## Join all the commiters to the channel

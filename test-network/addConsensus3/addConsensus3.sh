@@ -176,14 +176,14 @@ infoln "Creating file .env ..."
 CONSENSUS_SET_HOST=$(echo $LOCAL_CONSENSUS_NAME".example.com")
 cat docker/.env_template | sed "s/consensus/${LOCAL_CONSENSUS_NAME}/g" | sed "s/c_port/${LOCAL_CONSENSUS_PORT}/g" | sed "s/osn_port/${LOCAL_CONSENSUS_ADMIN_PORT}/g" > docker/.env
 cat docker/docker-compose-consensus3-template.yaml | sed "s/CONSENSUS_DOMAIN_NAME/${CONSENSUS_SET_HOST}/g" > docker/docker-compose-consensus3.yaml
-infoln "Creating order3 ..."
+infoln "Creating ${LOCAL_CONSENSUS_NAME} ..."
 networkUp
 
-infoln "Joining order3 commiter to the channel..."
+infoln "Joining ${LOCAL_CONSENSUS_NAME} commiter to the channel..."
 joinChannel
 successln "Channel '$CHANNEL_NAME' created"
 
-infoln "Modifing order3 config to the channel..."
+infoln "Modifing ${LOCAL_CONSENSUS_NAME} config to the channel..."
 createModifyChannelConfig
 createConfigUpdate ${CHANNEL_NAME} chaindata/config.json chaindata/modified_config.json chaindata/consensus_update_in_envelope.pb
 
@@ -197,4 +197,4 @@ set -x
 commiter channel update -f chaindata/consensus_update_in_envelope.pb -c ${CHANNEL_NAME} -o consensus.example.com:7050 --ordererTLSHostnameOverride consensus.example.com --tls --cafile "$CONSENSUS_CA"
 { set +x; } 2>/dev/null
 
-successln "Config transaction to add org3 to network submitted"
+successln "Config transaction to add ${LOCAL_CONSENSUS_NAME} to network submitted"

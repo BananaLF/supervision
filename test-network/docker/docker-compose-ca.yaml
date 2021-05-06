@@ -13,6 +13,7 @@ services:
   ca_org1:
     image: mihongtech/mh-ca:$IMAGE_TAG
     environment:
+      - FABRIC_CA_HOME=/etc/mihongtech/mh-ca-server
       - CA_CFG_PATH=/etc/mihongtech/mh-ca-server/mh-ca-server-config.yaml
       - FABRIC_CA_SERVER_CA_NAME=ca-org1
       - FABRIC_CA_SERVER_TLS_ENABLED=true
@@ -29,6 +30,7 @@ services:
   ca_org2:
     image: mihongtech/mh-ca:$IMAGE_TAG
     environment:
+      - FABRIC_CA_HOME=/etc/mihongtech/mh-ca-server
       - CA_CFG_PATH=/etc/mihongtech/mh-ca-server/mh-ca-server-config.yaml
       - FABRIC_CA_SERVER_CA_NAME=ca-org2
       - FABRIC_CA_SERVER_TLS_ENABLED=true
@@ -45,6 +47,7 @@ services:
   ca_consensus:
     image: mihongtech/mh-ca:$IMAGE_TAG
     environment:
+      - FABRIC_CA_HOME=/etc/mihongtech/mh-ca-server
       - CA_CFG_PATH=/etc/mihongtech/mh-ca-server/mh-ca-server-config.yaml
       - FABRIC_CA_SERVER_CA_NAME=ca-consensus
       - FABRIC_CA_SERVER_TLS_ENABLED=true

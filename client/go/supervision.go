@@ -34,12 +34,6 @@ func main() {
 	}
 
 	ccpPath := filepath.Join(
-		"..",
-		"..",
-		"test-network",
-		"organizations",
-		"commiterOrganizations",
-		"org1.example.com",
 		"connection-org1.yaml",
 	)
 
@@ -103,18 +97,18 @@ func main() {
 		{"1", "org.example.com.7"},
 	}
 
-	_, err = contract.SubmitTransaction("AddEvaluation", "1", "org.example.com.0")
-	if err != nil {
-		fmt.Printf("Failed to submit transaction: %s\n", err)
-		os.Exit(1)
-	}
-	//fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
-
-	_, err = contract.SubmitTransaction("AddEvaluation", "2", "lifei.example.com.0")
-	if err != nil {
-		fmt.Printf("Failed to submit transaction: %s\n", err)
-		os.Exit(1)
-	}
+	//_, err = contract.SubmitTransaction("AddEvaluation", "1", "org.example.com.0")
+	//if err != nil {
+	//	fmt.Printf("Failed to submit transaction: %s\n", err)
+	//	os.Exit(1)
+	//}
+	////fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
+	//
+	//_, err = contract.SubmitTransaction("AddEvaluation", "2", "lifei.example.com.0")
+	//if err != nil {
+	//	fmt.Printf("Failed to submit transaction: %s\n", err)
+	//	os.Exit(1)
+	//}
 	for i := range resourcesTest {
 		_, err := contract.SubmitTransaction("ModifyEvaluation", resourcesTest[i].Key, resourcesTest[i].Data)
 		if err != nil {
@@ -124,12 +118,12 @@ func main() {
 		//fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
 	}
 
-	//fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
-	_, err = contract.SubmitTransaction("RemoveEvaluation", "2")
-	if err != nil {
-		fmt.Printf("Failed to submit transaction: %s\n", err)
-		os.Exit(1)
-	}
+	////fmt.Println("Time:", time.Now().Format("2006-01-02 15:04:05"), "AddEvaluation success")
+	//_, err = contract.SubmitTransaction("RemoveEvaluation", "2")
+	//if err != nil {
+	//	fmt.Printf("Failed to submit transaction: %s\n", err)
+	//	os.Exit(1)
+	//}
 	result, err := contract.EvaluateTransaction("QueryEvaluation", "1")
 	if err != nil {
 		fmt.Printf("Failed to submit transaction: %s\n", err)
